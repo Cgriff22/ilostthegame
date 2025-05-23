@@ -17,19 +17,6 @@ Base.metadata.create_all(engine)
 
 from sqlalchemy.orm import sessionmaker
 
-Session = sessionmaker(bind=engine)
-session = Session()
-
-# Add data
-new_row = MyTable(name='example', value=123)
-session.add(new_row)
-session.commit()
-
-#Query date
-retrieved_row = session.query(MyTable).filter_by(name='example').first()
-print(retrieved_row.value)
-
-session.close()
 
 
 # receive input from javascript frontend
@@ -52,7 +39,34 @@ app.add_middleware(
 async def submit_text(request: Request):
     data = await request.json()
     text = data.get("text")
+
+    # open session
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    # add data
+    new_row = MyTable(name=text, value = 1)
+    session.add(new_row)
+    session.commit()
+
+    # query date
+    retrieved_row = session.query(MyTable).filter_by(name=text).first()
+    print(retrieved_row)
+    session.close()
+
     print('Received:', text)
     return{"message": f"Text '{text}' received"}
+
+
+
+@app.get('/get_data')
+def get_data():
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    rows = session.query(MyTable).all()
+    result = [{"id": r.id, "name": r.name, "value": r.value} for r in rows]
+    print(result)
+    session.close()
+    return result
 
 
