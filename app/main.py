@@ -10,7 +10,8 @@ class MyTable(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    username = Column(String)
+    password = Column(Integer)
     value = Column(Integer)
 
 Base.metadata.create_all(engine)
@@ -28,7 +29,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500"],  # frontend origin
+    allow_origins=["*"],  # frontend origin
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,7 +46,7 @@ async def submit_text(request: Request):
     session = Session()
 
     # add data
-    new_row = MyTable(name=text, value = 1)
+    new_row = MyTable(username=text, password=0, value=1)
     session.add(new_row)
     session.commit()
 
@@ -64,7 +65,7 @@ def get_data():
     Session = sessionmaker(bind=engine)
     session = Session()
     rows = session.query(MyTable).all()
-    result = [{"id": r.id, "name": r.name, "value": r.value} for r in rows]
+    result = [{"id": r.id, "name": r.username, "value": r.value} for r in rows]
     print(result)
     session.close()
     return result
