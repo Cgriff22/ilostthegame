@@ -77,3 +77,33 @@ body {
   background: #1abc9c;
   color: white !important
 }
+
+.createAccount{
+  display: flex;
+}
+#username{
+  margin-left: 10px;
+  margin: 10px;
+}
+#password{
+  margin-left: 10px;
+  margin: 10px
+}
+#enter{
+  margin:10px
+}
+
+.signIn{
+  display: flex;
+}
+#signInUsername{
+  margin-left: 10px;
+  margin: 10px;
+}
+#signInPassword{
+  margin-left: 10px;
+  margin: 10px
+}
+#signInEnter{
+  margin:10px
+}

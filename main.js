@@ -2,33 +2,59 @@ function iLostTheGame(){
     document.getElementById("helloworld").innerText = "You lost the game";
 }
 
-//document.getElementById("lost").onclick = iLostTheGame;
-
+document.getElementById("lost").onclick = iLostTheGame;
 
 
 function submit_text(){
-    const inputElement = document.getElementById('input1');
-    const text = inputElement.value;
-    let temp = '';
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password')
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+    
     fetch('http://127.0.0.1:8000/submit_text', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ text: text})
+        body: JSON.stringify({ username: username, password: password})
     })
     .then(response => response.json())
     .then(data => {
         console.log('Success:', data);
-        temp = data.message;
+        //temp = data.message;
     })
     .catch(error => {
         console.error('Error:', error);
     });
-    document.getElementById("helloworld").innerText = temp;
+    
 }
 
-document.getElementById('lost').onclick = submit_text;
+document.getElementById('enter').onclick = submit_text;
+
+function sign_in(){
+    const usernameInput = document.getElementById('signInUsername');
+    const passwordInput = document.getElementById('signInPassword')
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+    
+    fetch('http://127.0.0.1:8000/sign_in', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: username, password: password})
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        //temp = data.message;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+    
+}
+document.getElementById('signInEnter').onclick = sign_in;
 
 function loadTableData(){
     fetch('http://127.0.0.1:8000/get_data')
@@ -38,7 +64,7 @@ function loadTableData(){
             tableBody.innerHTML = ""; // clear existing rows
             data.forEach(row => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row.id}</td><td>${row.name}</td><td>${row.value}</td>`;
+                tr.innerHTML = `<td>${row.id}</td><td>${row.username}</td><td>${row.password}</td><td>${row.value}</td>`;
                 tableBody.appendChild(tr);
             });
         })
@@ -47,3 +73,5 @@ function loadTableData(){
         });
 }
 window.onload = loadTableData;
+
+
