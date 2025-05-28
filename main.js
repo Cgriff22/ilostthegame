@@ -75,6 +75,11 @@ function sign_in(){
 }
 document.getElementById('signInEnter').onclick = sign_in;  
 
+function logout(){
+    localStorage.removeItem("access_token");   
+}
+document.getElementById('logout').onclick = logout;
+
 function loadTableData(){
     fetch('http://127.0.0.1:8000/get_data')
         .then(response => response.json())
