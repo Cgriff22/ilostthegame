@@ -18,3 +18,6 @@ May 27, 2025 22:49
 Implemented token authorization using PyJWT. Users may now log in using their username and password and press the 'I lost the game' button to update their 
 loss value in the database. 
 To Do: create a better UI/UX, Implement Calendar, create proper login page. 
+
+UPDATE: May 27, 2025 23:14 
+Added logout functionality. TODO: create better UI/UX, implement calendar, create separate login page.
