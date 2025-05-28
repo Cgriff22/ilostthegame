@@ -83,7 +83,7 @@ function loadTableData(){
             tableBody.innerHTML = ""; // clear existing rows
             data.forEach(row => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${row.id}</td><td>${row.username}</td><td>${row.password}</td><td>${row.value}</td>`;
+                tr.innerHTML = `<td>${row.id}</td><td>${row.username}</td><td>${row.value}</td>`;
                 tableBody.appendChild(tr);
             });
         })
