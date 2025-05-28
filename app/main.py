@@ -1,6 +1,8 @@
 from sqlalchemy import orm
 from sqlalchemy import create_engine
 from sqlalchemy import LargeBinary
+import jwt
+
 engine = create_engine('sqlite:///./ilostthegame.db')
 
 from sqlalchemy import Column, Integer, String
@@ -85,11 +87,14 @@ def get_data():
     session.close()
     return result
 
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
 @app.post('/sign_in')
 async def sign_in(request: Request):
     data = await request.json()
     name_to_find = data.get("username")
     password_text = data.get("password")
+
 
     Session = sessionmaker(bind=engine)
     session = Session()
@@ -103,9 +108,50 @@ async def sign_in(request: Request):
         data = session.query(MyTable).filter_by(username=name_to_find)
         result = data.first()
         pword = result.password
-
-        print(verify_password(password_text, pword))
+        username = name_to_find
+        if verify_password(password_text, pword):
+            encoded_jwt = jwt.encode({"sub": name_to_find}, SECRET_KEY, algorithm=ALGORITHM)
+            print(f"encoded_jwt: {encoded_jwt}")
+            #jwt.decode(encoded_jwt, "secret", algorithms=["HS256"])
+            return {"access_token": encoded_jwt, "token_type": "bearer"}
+        else:
+            print("Invalid password")
         print(pword)
     else:
         print(f"Username {name_to_find} does not exist in the database")
     session.close()
+
+from fastapi import Request, HTTPException, status, Depends
+
+def get_current_user(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+
+    token = auth_header.split(" ")[1]
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Token missing subject (sub)")
+        return username
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+@app.get('/protected_route')
+def protected_route(current_user: str = Depends(get_current_user)):
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    user_to_update = session.query(MyTable).filter_by(username=current_user).first()
+    user_to_update.value += 1
+    session.commit()
+
+    new_value = user_to_update.value
+    session.close()
+
+    return {"message": f"Loss recorded for {current_user}", "new_value": new_value}

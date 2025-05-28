@@ -1,4 +1,22 @@
+function authFetch(url, options = {}) {
+  const token = localStorage.getItem("access_token");
+  options.headers = {
+    ...options.headers,
+    'Authorization': 'Bearer ' + token,
+    'Content-Type': 'application/json'
+  };
+  return fetch(url, options);
+}
+
+
+
 function iLostTheGame(){
+    authFetch('http://127.0.0.1:8000/protected_route')
+    .then(res => res.json())
+    .then(data => console.log(data));
+
+        
+
     document.getElementById("helloworld").innerText = "You lost the game";
 }
 
@@ -46,6 +64,7 @@ function sign_in(){
     })
     .then(response => response.json())
     .then(data => {
+        localStorage.setItem("access_token", data.access_token);
         console.log('Success:', data);
         //temp = data.message;
     })
@@ -54,7 +73,7 @@ function sign_in(){
     });
     
 }
-document.getElementById('signInEnter').onclick = sign_in;
+document.getElementById('signInEnter').onclick = sign_in;  
 
 function loadTableData(){
     fetch('http://127.0.0.1:8000/get_data')
